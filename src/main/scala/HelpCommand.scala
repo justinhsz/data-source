@@ -2,13 +2,14 @@ package com.justinhsz
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{input_file_name, month, split, to_date, udf, year}
+import com.databricks.spark.avro._
 
 object HelpCommand {
   def getSampleDataset() = {
     sys.runtime.exec("git clone https://github.com/CSSEGISandData/COVID-19.git")
   }
 
-  def partitionDataset(master: Option[String]) = {
+  def partitionDataset(fileType: String, path: String, master: Option[String]) = {
     val spark = SparkSession.builder().master(master.getOrElse("local")).getOrCreate()
     val name_only = udf{ filePath: String => filePath.split("/").last.takeWhile( _ != '.')}
 
@@ -19,12 +20,22 @@ object HelpCommand {
       .withColumn("year", year(fileDateColumn))
       .withColumn("month", month(fileDateColumn))
 
-    df.show()
-    df.write
-      .option("header", true)
-      .mode("overwrite")
-      .partitionBy("year", "month")
-      .csv("./covid-19-partitioned")
+    fileType match {
+      case "csv" =>
+        df.write
+          .option("header", true)
+          .mode("overwrite")
+          .partitionBy("year", "month")
+          .csv(path)
+      case "avro" =>
+        df.write
+          .format("com.databricks.spark.avro")
+          .option("header", true)
+          .mode("overwrite")
+          .partitionBy("year", "month")
+          .avro(path)
+      case _ => throw new NotImplementedError("Currently not support the type you given.")
+    }
   }
 
   def main(args: Array[String]): Unit = {
@@ -33,7 +44,7 @@ object HelpCommand {
     } else {
       args(0) match {
         case "download" => getSampleDataset()
-        case "preprocess" => partitionDataset(None)
+        case "preprocess" => partitionDataset(args(1), args(2), None)
         case _ => println("Do nothing")
       }
     }
