@@ -1,5 +1,5 @@
 package com.justinhsz
-package source.csv
+package source.partition.csv
 
 import org.apache.spark.sql.sources.v2.reader.DataSourceReader
 import org.apache.spark.sql.sources.v2.{DataSourceOptions, ReadSupport}

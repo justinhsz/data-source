@@ -14,5 +14,6 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql"   % sparkVersion,
   "org.apache.spark" %% "spark-mllib" % sparkVersion,
   "com.databricks"   %% "spark-avro"  % "4.0.0",
-  "org.apache.commons" % "commons-csv" % "[1.4,)"
+  "org.apache.commons" % "commons-csv" % "[1.4,)",
+  "com.github.nscala-time" %% "nscala-time" % "2.26.0"
 )
