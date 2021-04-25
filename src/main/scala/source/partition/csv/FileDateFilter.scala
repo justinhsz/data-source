@@ -1,15 +1,15 @@
 package com.justinhsz
 package source.partition.csv
 
-import com.github.nscala_time.time.Imports.{LocalDate, Period}
+import com.github.nscala_time.time.Imports._
 
 import scala.collection.mutable.ArrayBuffer
 
 class FileDateFilter(private var dateList: Array[LocalDate] = Array.empty[LocalDate]) {
   private var lowerBound: LocalDate = null
-  private var lowerBoundInclude: Boolean = null
+  private var lowerBoundInclude: Boolean = false
   private var upperBound: LocalDate = null
-  private var upperBoundInclude: Boolean = null
+  private var upperBoundInclude: Boolean = false
 
   def this(date: LocalDate) = this(Array(date))
 

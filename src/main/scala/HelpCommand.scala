@@ -1,7 +1,7 @@
 package com.justinhsz
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{input_file_name, month, split, to_date, udf, year}
+import org.apache.spark.sql.functions.{dayofmonth, input_file_name, month, split, to_date, udf, year}
 import com.databricks.spark.avro._
 
 object HelpCommand {
@@ -19,20 +19,21 @@ object HelpCommand {
       .csv("./COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/")
       .withColumn("year", year(fileDateColumn))
       .withColumn("month", month(fileDateColumn))
+      .withColumn("day", dayofmonth(fileDateColumn))
 
     fileType match {
       case "csv" =>
         df.write
           .option("header", true)
           .mode("overwrite")
-          .partitionBy("year", "month")
+          .partitionBy("year", "month","day")
           .csv(path)
       case "avro" =>
         df.write
           .format("com.databricks.spark.avro")
           .option("header", true)
           .mode("overwrite")
-          .partitionBy("year", "month")
+          .partitionBy("year", "month","day")
           .avro(path)
       case _ => throw new NotImplementedError("Currently not support the type you given.")
     }
